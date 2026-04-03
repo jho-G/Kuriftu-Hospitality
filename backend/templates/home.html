@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div>
+  <section class="hero" aria-label="Welcome">
+    <img class="hero__img" src="{% static 'images/hero-resort.jpg' %}" alt="Kuriftu Resort aerial view" width="1920" height="1080">
+    <div class="hero__overlay" aria-hidden="true"></div>
+    <div class="container-resort hero__content">
+      <p class="hero__eyebrow">Kuriftu Resort &amp; Spa</p>
+      <h1 class="hero__title">
+        Experience African Luxury at <span class="text-gradient-gold">Kuriftu African Village</span>
+      </h1>
+      <p class="hero__lead">
+        Discover 54 handcrafted villas nestled in Ethiopia's breathtaking landscape. Where African heritage meets modern luxury.
+      </p>
+      <div class="hero__actions">
+        <a href="{% url 'villas' %}" class="btn btn--gold">Explore Villas</a>
+        <a href="{% url 'chat' %}" class="btn btn--glass">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+          Talk to AI Concierge
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding bg-section" aria-labelledby="features-heading">
+    <div class="container-resort">
+      <h2 id="features-heading" class="sr-only">Resort features</h2>
+      <div class="feature-grid">
+        <a href="{% url 'chat' %}" class="feature-card">
+          <div class="feature-card__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+          </div>
+          <h3>AI Concierge</h3>
+          <p>24/7 personalized assistance powered by AI</p>
+        </a>
+        <a href="{% url 'smart_room' %}" class="feature-card">
+          <div class="feature-card__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+          </div>
+          <h3>Smart Room</h3>
+          <p>Control your room with intelligent automation</p>
+        </a>
+        <a href="{% url 'villas' %}" class="feature-card">
+          <div class="feature-card__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+          </div>
+          <h3>54 Luxury Villas</h3>
+          <p>African-themed villas with cultural design</p>
+        </a>
+        <a href="{% url 'experiences' %}" class="feature-card">
+          <div class="feature-card__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h3>Wellness &amp; Spa</h3>
+          <p>Rejuvenate with world-class treatments</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-padding bg-section--muted" aria-labelledby="discover-heading">
+    <div class="container-resort">
+      <div class="section-head">
+        <p class="section-head__eyebrow" id="discover-heading">Discover</p>
+        <h2>Unforgettable Experiences</h2>
+      </div>
+      <div class="highlight-grid">
+        <a href="{% url 'villas' %}" class="highlight-card">
+          <div class="highlight-card__img">
+            <img src="{% static 'images/villa-romantic.jpg' %}" alt="Luxury villas" loading="lazy" width="800" height="600">
+          </div>
+          <div class="highlight-card__body">
+            <h3>Luxury Villas</h3>
+            <p>54 uniquely designed African-themed villas</p>
+          </div>
+        </a>
+        <a href="{% url 'experiences' %}" class="highlight-card">
+          <div class="highlight-card__img">
+            <img src="{% static 'images/dining.jpg' %}" alt="Fine dining" loading="lazy" width="800" height="600">
+          </div>
+          <div class="highlight-card__body">
+            <h3>Fine Dining</h3>
+            <p>Local Ethiopian &amp; international cuisine</p>
+          </div>
+        </a>
+        <a href="{% url 'experiences' %}" class="highlight-card">
+          <div class="highlight-card__img">
+            <img src="{% static 'images/wellness.jpg' %}" alt="Wellness retreat" loading="lazy" width="800" height="600">
+          </div>
+          <div class="highlight-card__body">
+            <h3>Wellness Retreat</h3>
+            <p>Yoga, meditation, and spa experiences</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band" aria-labelledby="cta-heading">
+    <div class="cta-band__bg" aria-hidden="true"></div>
+    <div class="container-resort cta-band__inner">
+      <h2 id="cta-heading">Ready to Experience African Luxury?</h2>
+      <p>Let our AI concierge help you plan the perfect stay at Kuriftu African Village.</p>
+      <a href="{% url 'chat' %}" class="btn btn--gold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+        Start Planning
+      </a>
+    </div>
+  </section>
+</div>
+{% endblock %}

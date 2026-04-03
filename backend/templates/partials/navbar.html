@@ -1,0 +1,38 @@
+{# active: home, about, villas, experiences, events, chat, smart_room, feedback #}
+<nav class="site-nav" role="navigation" aria-label="Main">
+  <div class="site-nav__inner">
+    <a href="{% url 'home' %}" class="site-logo"><span>Kuriftu</span></a>
+
+    <div class="site-nav__links">
+      <a href="{% url 'home' %}" class="site-nav__link{% if active == 'home' %} is-active{% endif %}">Home</a>
+      <a href="{% url 'about' %}" class="site-nav__link{% if active == 'about' %} is-active{% endif %}">About</a>
+      <a href="{% url 'villas' %}" class="site-nav__link{% if active == 'villas' %} is-active{% endif %}">Villas</a>
+      <a href="{% url 'experiences' %}" class="site-nav__link{% if active == 'experiences' %} is-active{% endif %}">Experiences</a>
+      <a href="{% url 'events' %}" class="site-nav__link{% if active == 'events' %} is-active{% endif %}">Events</a>
+      <a href="{% url 'chat' %}" class="site-nav__link{% if active == 'chat' %} is-active{% endif %}">AI Concierge</a>
+      <a href="{% url 'smart_room' %}" class="site-nav__link{% if active == 'smart_room' %} is-active{% endif %}">Smart Room</a>
+      <a href="{% url 'feedback' %}" class="site-nav__link{% if active == 'feedback' %} is-active{% endif %}">Feedback</a>
+    </div>
+
+    <a href="{% url 'chat' %}" class="btn-nav-cta">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+      Talk to AI
+    </a>
+
+    <button type="button" class="site-nav__toggle" data-nav-toggle aria-expanded="false" aria-controls="nav-drawer">
+      <span class="sr-only">Menu</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="site-nav__drawer" id="nav-drawer" data-nav-drawer>
+    <a href="{% url 'home' %}" class="site-nav__link{% if active == 'home' %} is-active{% endif %}">Home</a>
+    <a href="{% url 'about' %}" class="site-nav__link{% if active == 'about' %} is-active{% endif %}">About</a>
+    <a href="{% url 'villas' %}" class="site-nav__link{% if active == 'villas' %} is-active{% endif %}">Villas</a>
+    <a href="{% url 'experiences' %}" class="site-nav__link{% if active == 'experiences' %} is-active{% endif %}">Experiences</a>
+    <a href="{% url 'events' %}" class="site-nav__link{% if active == 'events' %} is-active{% endif %}">Events</a>
+    <a href="{% url 'chat' %}" class="site-nav__link{% if active == 'chat' %} is-active{% endif %}">AI Concierge</a>
+    <a href="{% url 'smart_room' %}" class="site-nav__link{% if active == 'smart_room' %} is-active{% endif %}">Smart Room</a>
+    <a href="{% url 'feedback' %}" class="site-nav__link{% if active == 'feedback' %} is-active{% endif %}">Feedback</a>
+  </div>
+</nav>

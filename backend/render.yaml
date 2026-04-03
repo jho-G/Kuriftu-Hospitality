@@ -1,0 +1,29 @@
+# Blueprint (optional). In Render dashboard: New → Blueprint → paste this file, or create Web Service manually.
+# Important: set Root Directory to "backend" for this repo layout.
+#
+# Add a PostgreSQL instance in Render, then set DATABASE_URL on the web service from the DB "Internal Database URL".
+
+services:
+  - type: web
+    name: kuriftu-hospitality
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: DEBUG
+        value: "False"
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: SITE_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false

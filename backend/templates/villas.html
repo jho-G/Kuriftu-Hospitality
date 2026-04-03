@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Villas{% endblock %}
+
+{% block content %}
+{% static 'images/villa-romantic.jpg' as img_villa %}
+<header class="page-hero" style="background-image: linear-gradient(rgba(45,38,32,0.7), rgba(45,38,32,0.85)), url('{{ img_villa }}'); background-size: cover; background-position: center;">
+  <div class="container-resort">
+    <p class="page-hero__eyebrow">Accommodation</p>
+    <h1>Our Villas</h1>
+    <p class="page-hero__sub">54 uniquely crafted African-themed villas await you</p>
+  </div>
+</header>
+
+<section class="section-padding" style="background: var(--color-cream);">
+  <div class="container-resort">
+    <div class="section-head">
+      <p class="section-head__eyebrow">Choose your experience</p>
+      <h2>Romantic, Family &amp; Cultural</h2>
+    </div>
+    <div class="prose-simple">
+      <p style="color: var(--color-text-muted);">Romantic villas offer private plunge pools and garden terraces. Family villas include separate living areas and child-friendly amenities. Cultural experience villas showcase authentic African artistry and traditional Ethiopian design.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

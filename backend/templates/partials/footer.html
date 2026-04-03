@@ -1,0 +1,30 @@
+<footer class="site-footer" role="contentinfo">
+  <div class="container-resort">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <h3><span class="text-gradient-gold" style="background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold-bright)); -webkit-background-clip: text; background-clip: text; color: transparent;">Kuriftu</span> Resort &amp; Spa</h3>
+        <p>Experience African luxury at Kuriftu African Village, Ethiopia. Built by Ethiopia. Shared with the world.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <div class="site-footer__list">
+          <a href="{% url 'villas' %}">Villas</a>
+          <a href="{% url 'experiences' %}">Experiences</a>
+          <a href="{% url 'events' %}">Events</a>
+          <a href="{% url 'about' %}">About</a>
+        </div>
+      </div>
+      <div>
+        <h4>AI Services</h4>
+        <div class="site-footer__list">
+          <a href="{% url 'chat' %}">AI Concierge</a>
+          <a href="{% url 'smart_room' %}">Smart Room</a>
+          <a href="{% url 'feedback' %}">Feedback</a>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      © {% now "Y" %} Kuriftu Resort &amp; Spa – African Village. All rights reserved.
+    </div>
+  </div>
+</footer>

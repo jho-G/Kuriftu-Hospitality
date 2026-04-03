@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Feedback{% endblock %}
+
+{% block content %}
+<div class="feedback-shell">
+  <header class="page-hero">
+    <div class="container-resort">
+      <p class="page-hero__eyebrow">Feedback</p>
+      <h1>Share Your Experience</h1>
+      <p class="page-hero__sub">Your feedback is saved to our system (demo API below).</p>
+    </div>
+  </header>
+
+  <div class="feedback-card-wrap">
+    {# Form: JavaScript intercepts submit → fetch() JSON to DRF #}
+    <form id="feedback-form" class="glass-card feedback-card" method="post" action="">
+      {% csrf_token %}
+      <h2 style="font-family: var(--font-display); font-size: 1.25rem; margin: 0 0 1.25rem;">How was your stay?</h2>
+
+      <div style="margin-bottom: 1.25rem;">
+        <span class="form-label">Category</span>
+        <div class="pill-group" role="radiogroup" aria-label="Feedback category">
+          <label class="pill-option"><input type="radio" name="category" value="overall" checked> Overall</label>
+          <label class="pill-option"><input type="radio" name="category" value="villa"> Villa</label>
+          <label class="pill-option"><input type="radio" name="category" value="dining"> Dining</label>
+          <label class="pill-option"><input type="radio" name="category" value="spa"> Spa</label>
+          <label class="pill-option"><input type="radio" name="category" value="activities"> Activities</label>
+          <label class="pill-option"><input type="radio" name="category" value="staff"> Staff</label>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label class="form-label" for="id-rating">Rating</label>
+        <select id="id-rating" name="rating" required class="textarea-field" style="min-height: auto; padding: 0.65rem 1rem;">
+          <option value="">Select…</option>
+          <option value="5">5 — Excellent</option>
+          <option value="4">4 — Very good</option>
+          <option value="3">3 — Good</option>
+          <option value="2">2 — Fair</option>
+          <option value="1">1 — Poor</option>
+        </select>
+      </div>
+
+      <label class="form-label" for="feedback-text">Your feedback</label>
+      <textarea class="textarea-field" id="feedback-text" name="comment" rows="5" required placeholder="Tell us about your experience at Kuriftu African Village..."></textarea>
+
+      <button type="submit" id="feedback-submit" class="btn btn--gold" style="width: 100%; margin-top: 1.25rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        <span class="btn-label">Submit Feedback</span>
+      </button>
+
+      <div id="feedback-result" class="feedback-result" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var form = document.getElementById("feedback-form");
+  var resultEl = document.getElementById("feedback-result");
+  var submitBtn = document.getElementById("feedback-submit");
+  var apiUrl = "{% url 'feedback:api-feedback-create' %}";
+
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function showResult(ok, message, detail) {
+    resultEl.className = "feedback-result is-visible " + (ok ? "feedback-result--success" : "feedback-result--error");
+    resultEl.innerHTML = "<strong>" + (ok ? "Success" : "Error") + "</strong><p style=\"margin:0.35rem 0 0;\">" + message + "</p>";
+    if (detail) {
+      resultEl.innerHTML += "<pre>" + detail + "</pre>";
+    }
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    var category = form.querySelector('input[name="category"]:checked');
+    var rating = form.querySelector("#id-rating").value;
+    var comment = document.getElementById("feedback-text").value.trim();
+
+    if (!rating || !comment) {
+      showResult(false, "Please choose a rating and enter your feedback.");
+      return;
+    }
+
+    var payload = {
+      category: category ? category.value : "overall",
+      rating: parseInt(rating, 10),
+      comment: comment
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.querySelector(".btn-label").textContent = "Sending…";
+
+    fetch(apiUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken") || ""
+      },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) {
+        return res.text().then(function (text) {
+          var data;
+          try {
+            data = text ? JSON.parse(text) : {};
+          } catch (e) {
+            data = { detail: text };
+          }
+          return { ok: res.ok, status: res.status, data: data };
+        });
+      })
+      .then(function (out) {
+        if (out.ok) {
+          showResult(true, out.data.message || "Saved.", JSON.stringify(out.data, null, 2));
+          form.reset();
+          var overall = form.querySelector('input[name="category"][value="overall"]');
+          if (overall) overall.checked = true;
+        } else {
+          var errText =
+            typeof out.data === "object"
+              ? JSON.stringify(out.data, null, 2)
+              : String(out.data);
+          showResult(false, "Request failed (" + out.status + ").", errText);
+        }
+      })
+      .catch(function (err) {
+        showResult(false, "Network error.", err.message || String(err));
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.querySelector(".btn-label").textContent = "Submit Feedback";
+      });
+  });
+})();
+</script>
+{% endblock %}

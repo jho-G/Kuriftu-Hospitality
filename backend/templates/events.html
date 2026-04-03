@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Events &amp; Meetings{% endblock %}
+
+{% block content %}
+{% static 'images/events-hall.jpg' as img_events %}
+<header class="page-hero" style="background-image: linear-gradient(rgba(45,38,32,0.75), rgba(45,38,32,0.9)), url('{{ img_events }}'); background-size: cover; background-position: center;">
+  <div class="container-resort">
+    <p class="page-hero__eyebrow">Venues</p>
+    <h1>Events &amp; Meetings</h1>
+    <p class="page-hero__sub">World-class spaces for conferences, weddings, and celebrations</p>
+  </div>
+</header>
+
+<section class="section-padding" style="background: var(--color-cream);">
+  <div class="container-resort">
+    <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem;">
+      <h3 style="font-family: var(--font-display); margin: 0 0 0.5rem;">Pan-African Hall</h3>
+      <p style="margin: 0; font-size: 0.875rem; color: var(--color-text-muted);">500+ guests — grand ballroom for large-scale events and conferences.</p>
+    </div>
+    <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1rem;">
+      <h3 style="font-family: var(--font-display); margin: 0 0 0.5rem;">Haile Selassie Hall</h3>
+      <p style="margin: 0; font-size: 0.875rem; color: var(--color-text-muted);">200 guests — elegant space for corporate events.</p>
+    </div>
+    <div class="glass-card" style="padding: 1.5rem;">
+      <h3 style="font-family: var(--font-display); margin: 0 0 0.5rem;">Kwame Nkrumah Hall</h3>
+      <p style="margin: 0; font-size: 0.875rem; color: var(--color-text-muted);">150 guests — ideal for mid-size gatherings and workshops.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
