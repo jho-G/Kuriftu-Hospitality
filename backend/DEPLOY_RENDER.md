@@ -9,7 +9,13 @@ Your build command was corrupted (e.g. `pip inspip` and duplicated text). Use **
 1. **New → Web Service** → connect `https://github.com/jho-G/Kuriftu-Hospitality`
 2. **Root Directory:** `backend`  ← required for this repo layout
 3. **Runtime:** Python 3
-4. **Build Command** (copy the whole line):
+4. **Build Command** (copy one of these):
+
+   ```text
+   bash build.sh
+   ```
+
+   Or the equivalent inline command:
 
    ```text
    pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput

@@ -1,38 +1,73 @@
-"""Django settings for hospitality API (local + Render)."""
+"""Django settings for hospitality API — environment-driven for local dev and Render."""
+
+from __future__ import annotations
 
 import os
 from pathlib import Path
 
+import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-try:
-    from dotenv import load_dotenv
+# Render sets RENDER=true; do not load .env files on the platform (secrets come from the dashboard).
+_ON_RENDER = os.environ.get("RENDER", "").strip().lower() == "true"
 
-    load_dotenv(BASE_DIR.parent / ".env")
-    load_dotenv(BASE_DIR / ".env", override=True)
-except ImportError:
-    pass
+if not _ON_RENDER:
+    try:
+        from dotenv import load_dotenv
 
+        load_dotenv(BASE_DIR.parent / ".env")
+        load_dotenv(BASE_DIR / ".env", override=True)
+    except ImportError:
+        pass
 
-def _env_bool(key: str, default: str = "False") -> bool:
-    return os.environ.get(key, default).strip().lower() in ("1", "true", "yes", "on")
+# Blank DATABASE_URL in .env would make dj-database-url parse an empty string — treat as unset.
+if "DATABASE_URL" in os.environ and not (os.environ.get("DATABASE_URL") or "").strip():
+    del os.environ["DATABASE_URL"]
 
+# --- Core (requirement: DEBUG False by default; dev-only secret fallback) ---
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-def _env_list(key: str, default: str) -> list[str]:
-    return [x.strip() for x in os.environ.get(key, default).split(",") if x.strip()]
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "unsafe-dev-key")
 
+if _ON_RENDER:
+    if not (os.environ.get("DJANGO_SECRET_KEY") or "").strip():
+        raise ImproperlyConfigured(
+            "DJANGO_SECRET_KEY must be set in the Render environment (Dashboard → Environment)."
+        )
+    if SECRET_KEY == "unsafe-dev-key":
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY must not be left as the development default on Render.")
+    if not (os.environ.get("DATABASE_URL") or "").strip():
+        raise ImproperlyConfigured(
+            "DATABASE_URL must be set on Render (link your PostgreSQL service’s internal URL)."
+        )
 
-# Django requires SECRET_KEY non-empty. Empty DJANGO_SECRET_KEY= in .env would otherwise win over defaults.
-_secret = (os.environ.get("DJANGO_SECRET_KEY") or os.environ.get("SECRET_KEY") or "").strip()
-SECRET_KEY = _secret or "django-insecure-dev-only-set-django-secret-key-in-env-for-production"
-
-DEBUG = _env_bool("DEBUG", "True")
-
-_default_hosts = "localhost,127.0.0.1,[::1],testserver,.onrender.com"
-ALLOWED_HOSTS: list[str] = _env_list("ALLOWED_HOSTS", _default_hosts)
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get("ALLOWED_HOSTS", "*").split(",")
+    if h.strip()
+] or ["*"]
 
 _csrf_default = "http://127.0.0.1:8000,http://localhost:8000"
-CSRF_TRUSTED_ORIGINS: list[str] = _env_list("CSRF_TRUSTED_ORIGINS", _csrf_default)
+CSRF_TRUSTED_ORIGINS = [
+    x.strip()
+    for x in os.environ.get("CSRF_TRUSTED_ORIGINS", _csrf_default).split(",")
+    if x.strip()
+]
+
+_sqlite_fallback = f"sqlite:///{(BASE_DIR / 'db.sqlite3').as_posix()}"
+DATABASES = {
+    "default": dj_database_url.config(
+        default=_sqlite_fallback,
+        conn_max_age=600,
+    ),
+}
+
+# Sensitive / optional integrations (read from environment only; no hardcoded secrets)
+OPENROUTER_API_KEY = (os.environ.get("OPENROUTER_API_KEY") or "").strip() or None
+OPENAI_API_KEY = (os.environ.get("OPENAI_API_KEY") or "").strip() or None
+GEMINI_API_KEY = (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or "").strip() or None
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -82,30 +117,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# PostgreSQL on Render via DATABASE_URL; SQLite when unset or empty
-_database_url = os.environ.get("DATABASE_URL", "").strip()
-try:
-    import dj_database_url
-
-    if _database_url:
-        DATABASES = {
-            "default": dj_database_url.parse(_database_url, conn_max_age=600),
-        }
-    else:
-        DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.sqlite3",
-                "NAME": BASE_DIR / "db.sqlite3",
-            }
-        }
-except ImportError:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
-
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -125,8 +136,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# Optional HTTPS GLB/GLTF URL when a RoomVirtualTwin has no valid model_url (dev/demo only).
-# Per-room URLs are always read from RoomVirtualTwin.model_url in the database.
 VIRTUAL_ROOM_FALLBACK_MODEL_URL = (os.environ.get("VIRTUAL_ROOM_FALLBACK_MODEL_URL") or "").strip()
 
 STORAGES = {
@@ -162,9 +171,13 @@ _cors = os.environ.get(
 )
 CORS_ALLOWED_ORIGINS = [x.strip() for x in _cors.split(",") if x.strip()]
 
-# Production hardening on Render (they set RENDER=true)
-if not DEBUG and os.environ.get("RENDER", "").lower() == "true":
-    SECURE_SSL_REDIRECT = _env_bool("SECURE_SSL_REDIRECT", "True")
+if not DEBUG and _ON_RENDER:
+    SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "True").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
