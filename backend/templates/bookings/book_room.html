@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Book {{ room.name }}{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--color-cream); min-height: 65vh;">
+  <div class="container-resort" style="max-width: 28rem;">
+    <h1 style="margin-bottom: 0.35rem;">Book {{ room.name }}</h1>
+    <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">{{ room.room_number }} · {{ room.price_per_night }} / night</p>
+
+    <form method="post" style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid rgba(45,38,32,0.12);">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div class="flash-msg flash-msg--error" style="margin-bottom: 1rem;">
+        {% for e in form.non_field_errors %}{{ e }}{% endfor %}
+      </div>
+      {% endif %}
+      {% for field in form %}
+      <div style="margin-bottom: 1rem;">
+        <label for="{{ field.id_for_label }}" style="display: block; font-weight: 600; margin-bottom: 0.35rem;">{{ field.label }}</label>
+        {{ field }}
+        {% for err in field.errors %}<p style="color: #b91c1c; font-size: 0.85rem; margin: 0.25rem 0 0;">{{ err }}</p>{% endfor %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn-nav-cta" style="width: 100%; justify-content: center; border: none; cursor: pointer;">Submit booking</button>
+    </form>
+
+    <p style="margin-top: 1.25rem;"><a href="{% url 'room_detail' pk=room.pk %}" style="color: var(--color-text-muted);">← Room details</a></p>
+  </div>
+</section>
+{% endblock %}

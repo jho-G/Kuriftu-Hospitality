@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Virtual preview — {{ room.name }}{% endblock %}
+
+{% block body_class %}virtual-viewer-page{% endblock %}
+{% block main_class %}virtual-viewer-main{% endblock %}
+{% block floating_fab %}{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .virtual-viewer-main.main-content { max-width: none; padding: 0; margin: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-[100dvh] bg-slate-950 text-slate-100 flex flex-col lg:flex-row">
+  <aside class="w-full lg:w-[380px] shrink-0 border-b lg:border-b-0 lg:border-r border-white/10 bg-slate-900/80 backdrop-blur-xl p-6 lg:p-8 flex flex-col gap-6 order-1">
+    <div>
+      <p class="font-mono text-[10px] uppercase tracking-[0.25em] text-cyan-400/90 mb-1">Limited preview</p>
+      <h1 class="text-xl font-bold text-white">{{ room.name }}</h1>
+      <p class="text-slate-500 text-sm font-mono mt-1">{{ room.room_number }} · {{ room.room_type }}</p>
+    </div>
+
+    <div class="rounded-xl border border-amber-500/40 bg-amber-950/30 p-4">
+      <p class="text-sm text-amber-100/95 leading-relaxed">
+        Sign in for the <strong>full interactive 3D</strong> experience, AI concierge controls, and ambient audio.
+      </p>
+      <a
+        href="{% url 'login' %}?next={{ request.path|urlencode }}"
+        class="mt-4 inline-flex w-full justify-center items-center py-2.5 px-4 rounded-lg font-mono text-sm border border-cyan-400/60 text-cyan-200 hover:bg-cyan-500/10 transition-colors"
+      >
+        Sign in for full experience
+      </a>
+      <a href="{% url 'signup' %}" class="block text-center text-xs text-slate-500 hover:text-cyan-400/80 mt-3">Create account</a>
+    </div>
+
+    <section class="rounded-xl border border-violet-500/30 bg-violet-950/20 p-4">
+      <h2 class="text-xs font-mono uppercase tracking-widest text-violet-300 mb-2">AI snapshot</h2>
+      <p class="text-sm text-slate-200 leading-relaxed border-l-2 border-cyan-500/50 pl-3">{{ expectation.live_expectation_report }}</p>
+    </section>
+
+    {% if climate_items %}
+    <section class="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+      <h2 class="text-xs font-mono uppercase tracking-widest text-slate-400 mb-3">Sensory hints</h2>
+      <ul class="space-y-2 text-sm">
+        {% for label, value in climate_items %}
+        <li class="flex justify-between gap-2 border-b border-white/5 pb-2 last:border-0">
+          <span class="text-slate-500">{{ label }}</span>
+          <span class="text-cyan-200">{{ value }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <a href="{% url 'virtual_rooms' %}" class="mt-auto text-center text-xs font-mono text-slate-500 hover:text-cyan-400/80">← Virtual tours</a>
+  </aside>
+
+  <div class="flex-1 min-h-[50vh] lg:min-h-[100dvh] bg-gradient-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center p-8 order-2">
+    <div class="max-w-md text-center rounded-2xl border border-white/10 bg-white/5 p-10 backdrop-blur-xl">
+      <p class="font-mono text-xs uppercase tracking-[0.2em] text-cyan-400/80 mb-3">3D experience locked</p>
+      <p class="text-slate-300 text-sm leading-relaxed mb-6">The interactive 3D viewer (Sketchfab or GLB), controls, and AI panel unlock after sign-in so we can personalize your expectation report.</p>
+      <div class="rounded-lg border border-dashed border-white/20 p-8 text-slate-600 font-mono text-sm">Interactive 3D preview</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

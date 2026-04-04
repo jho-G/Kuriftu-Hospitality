@@ -22,11 +22,9 @@ def _env_list(key: str, default: str) -> list[str]:
     return [x.strip() for x in os.environ.get(key, default).split(",") if x.strip()]
 
 
-# Secret key: set DJANGO_SECRET_KEY in environment (Render dashboard or .env)
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY",
-    "jd2vnVW7DkpA3kiK8qby4UUImv7HHKkc3cyZXVTeTcYfLBiQKYImMZqR1pJII79CZP1A-MhYZ9I",
-)
+# Django requires SECRET_KEY non-empty. Empty DJANGO_SECRET_KEY= in .env would otherwise win over defaults.
+_secret = (os.environ.get("DJANGO_SECRET_KEY") or os.environ.get("SECRET_KEY") or "").strip()
+SECRET_KEY = _secret or "django-insecure-dev-only-set-django-secret-key-in-env-for-production"
 
 DEBUG = _env_bool("DEBUG", "True")
 
@@ -124,6 +122,13 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Optional HTTPS GLB/GLTF URL when a RoomVirtualTwin has no valid model_url (dev/demo only).
+# Per-room URLs are always read from RoomVirtualTwin.model_url in the database.
+VIRTUAL_ROOM_FALLBACK_MODEL_URL = (os.environ.get("VIRTUAL_ROOM_FALLBACK_MODEL_URL") or "").strip()
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -136,6 +141,10 @@ STORAGES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.User"
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "/accounts/dashboard/"
+LOGOUT_REDIRECT_URL = "/"
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [

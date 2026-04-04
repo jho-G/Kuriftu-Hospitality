@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Virtual room tour{% endblock %}
+
+{% block content %}
+<header class="page-hero page-hero--compact" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 27, 24, 0.92));">
+  <div class="container-resort">
+    <p class="page-hero__eyebrow">3D preview</p>
+    <h1>Virtual room tour</h1>
+    <p class="page-hero__sub">Open an AI-guided preview for any room. {% if not user.is_authenticated %}<span style="opacity:0.95">Sign in for the full interactive 3D experience.</span>{% endif %}</p>
+  </div>
+</header>
+
+<section class="section-padding" style="background: var(--color-cream);">
+  <div class="container-resort">
+    {% if rooms %}
+    <ul class="virtual-rooms-list" style="list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem;">
+      {% for room in rooms %}
+      <li>
+        <a
+          href="{% url 'room_virtual_preview' room_id=room.pk %}"
+          class="virtual-rooms-list__card"
+          style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: #fff; border-radius: 12px; border: 1px solid rgba(45, 38, 32, 0.12); text-decoration: none; color: inherit; box-shadow: 0 4px 20px rgba(45, 38, 32, 0.06); transition: border-color 0.2s, box-shadow 0.2s;"
+        >
+          <div>
+            <strong style="display: block; font-size: 1.05rem;">{{ room.name }}</strong>
+            <span style="color: var(--color-text-muted); font-size: 0.9rem;">{{ room.room_number }} · {{ room.room_type }}</span>
+          </div>
+          <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-terracotta, #c45c3e); white-space: nowrap;">
+            {% if user.is_authenticated %}
+              {% if room.has_virtual_twin %}Full 3D →{% else %}Preview →{% endif %}
+            {% else %}
+              {% if room.has_virtual_twin %}Preview / sign in for 3D →{% else %}Preview →{% endif %}
+            {% endif %}
+          </span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color: var(--color-text-muted);">No active rooms are available yet. Add rooms in the admin to enable virtual tours.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

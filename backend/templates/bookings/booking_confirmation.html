@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Booking confirmed{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="background: var(--color-cream); min-height: 60vh;">
+  <div class="container-resort" style="max-width: 32rem;">
+    <h1 style="margin-bottom: 0.5rem;">Booking recorded</h1>
+    <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">Reference #{{ booking.pk }} · {{ booking.get_status_display }}</p>
+
+    <div style="background: #fff; padding: 1.75rem; border-radius: 12px; border: 1px solid rgba(45,38,32,0.12);">
+      <p><strong>{{ booking.room.name }}</strong> ({{ booking.room.room_number }})</p>
+      <p style="margin-top: 0.75rem; color: var(--color-text-muted);">Check-in: {{ booking.check_in }}<br>Check-out: {{ booking.check_out }}</p>
+      <p style="margin-top: 0.75rem;">Guests: {{ booking.guest_count }}</p>
+      {% if booking.total_price %}
+      <p style="margin-top: 0.75rem; font-weight: 700;">Total: {{ booking.total_price }}</p>
+      {% endif %}
+      {% if booking.notes %}
+      <p style="margin-top: 1rem; font-size: 0.95rem;"><strong>Notes:</strong> {{ booking.notes }}</p>
+      {% endif %}
+    </div>
+
+    <div style="margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem;">
+      <a href="{% url 'dashboard' %}" class="btn-nav-cta" style="display: inline-flex; text-decoration: none;">Dashboard</a>
+      <a href="{% url 'room_list' %}" style="align-self: center; color: var(--color-terracotta, #c45c3e); font-weight: 600;">Browse more rooms</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

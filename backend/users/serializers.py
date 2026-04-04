@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
@@ -37,4 +38,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User(**validated_data)
         user.set_password(password)
         user.save()
+        group, _ = Group.objects.get_or_create(name="Registered Guest")
+        user.groups.add(group)
         return user

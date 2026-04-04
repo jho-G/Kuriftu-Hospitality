@@ -1,17 +1,37 @@
-{# active: home, about, villas, experiences, events, chat, smart_room, feedback #}
+{# nav_active: home, about, rooms, virtual_rooms, dashboard, account, villas, experiences, events, chat, smart_room, feedback #}
 <nav class="site-nav" role="navigation" aria-label="Main">
   <div class="site-nav__inner">
     <a href="{% url 'home' %}" class="site-logo"><span>Kuriftu</span></a>
 
-    <div class="site-nav__links">
+    <div class="site-nav__links site-nav__links--scroll">
+      {% if user.is_authenticated %}
       <a href="{% url 'home' %}" class="site-nav__link{% if active == 'home' %} is-active{% endif %}">Home</a>
+      <a href="{% url 'room_list' %}" class="site-nav__link{% if active == 'rooms' %} is-active{% endif %}">Rooms</a>
+      <a href="{% url 'dashboard' %}" class="site-nav__link{% if active == 'dashboard' %} is-active{% endif %}">Dashboard</a>
+      <a href="{% url 'dashboard' %}#bookings" class="site-nav__link{% if active == 'dashboard' %} is-active{% endif %}">My bookings</a>
+      <a href="{% url 'virtual_rooms' %}" class="site-nav__link{% if active == 'virtual_rooms' %} is-active{% endif %}">Virtual room</a>
+      <a href="{% url 'dashboard' %}#profile" class="site-nav__link{% if active == 'dashboard' %} is-active{% endif %}">Profile</a>
+      {% if user.is_staff or user.is_superuser %}
+      <a href="{% url 'admin:index' %}" class="site-nav__link site-nav__link--admin" target="_blank" rel="noopener">Admin</a>
+      {% endif %}
+      {% else %}
+      <a href="{% url 'home' %}" class="site-nav__link{% if active == 'home' %} is-active{% endif %}">Home</a>
+      <a href="{% url 'room_list' %}" class="site-nav__link{% if active == 'rooms' %} is-active{% endif %}">Explore rooms</a>
       <a href="{% url 'about' %}" class="site-nav__link{% if active == 'about' %} is-active{% endif %}">About</a>
-      <a href="{% url 'villas' %}" class="site-nav__link{% if active == 'villas' %} is-active{% endif %}">Villas</a>
-      <a href="{% url 'experiences' %}" class="site-nav__link{% if active == 'experiences' %} is-active{% endif %}">Experiences</a>
-      <a href="{% url 'events' %}" class="site-nav__link{% if active == 'events' %} is-active{% endif %}">Events</a>
-      <a href="{% url 'chat' %}" class="site-nav__link{% if active == 'chat' %} is-active{% endif %}">AI Concierge</a>
-      <a href="{% url 'smart_room' %}" class="site-nav__link{% if active == 'smart_room' %} is-active{% endif %}">Smart Room</a>
-      <a href="{% url 'feedback' %}" class="site-nav__link{% if active == 'feedback' %} is-active{% endif %}">Feedback</a>
+      {% endif %}
+    </div>
+
+    <div class="site-nav__auth">
+      {% if user.is_authenticated %}
+      <span class="site-nav__welcome" title="{{ user.username }}">Welcome, <strong>{{ user.username }}</strong></span>
+      <form action="{% url 'logout' %}" method="post" class="site-nav__logout-form">
+        {% csrf_token %}
+        <button type="submit" class="site-nav__link site-nav__btn-logout">Logout</button>
+      </form>
+      {% else %}
+      <a href="{% url 'login' %}" class="site-nav__link{% if active == 'account' %} is-active{% endif %}">Login</a>
+      <a href="{% url 'signup' %}" class="site-nav__link site-nav__link--signup{% if active == 'account' %} is-active{% endif %}">Sign up</a>
+      {% endif %}
     </div>
 
     <a href="{% url 'chat' %}" class="btn-nav-cta">
@@ -26,9 +46,32 @@
   </div>
 
   <div class="site-nav__drawer" id="nav-drawer" data-nav-drawer>
+    {% if user.is_authenticated %}
     <a href="{% url 'home' %}" class="site-nav__link{% if active == 'home' %} is-active{% endif %}">Home</a>
+    <a href="{% url 'room_list' %}" class="site-nav__link{% if active == 'rooms' %} is-active{% endif %}">Rooms</a>
+    <a href="{% url 'dashboard' %}" class="site-nav__link{% if active == 'dashboard' %} is-active{% endif %}">Dashboard</a>
+    <a href="{% url 'dashboard' %}#bookings" class="site-nav__link">My bookings</a>
+    <a href="{% url 'virtual_rooms' %}" class="site-nav__link{% if active == 'virtual_rooms' %} is-active{% endif %}">Virtual room</a>
+    <a href="{% url 'dashboard' %}#profile" class="site-nav__link">Profile</a>
+    {% if user.is_staff or user.is_superuser %}
+    <a href="{% url 'admin:index' %}" class="site-nav__link site-nav__link--admin" target="_blank" rel="noopener">Admin panel</a>
+    {% endif %}
+    <p class="site-nav__drawer-welcome">Signed in as <strong>{{ user.username }}</strong></p>
+    <form action="{% url 'logout' %}" method="post" class="site-nav__drawer-logout">
+      {% csrf_token %}
+      <button type="submit" class="site-nav__link site-nav__drawer-logout-btn">Logout</button>
+    </form>
+    {% else %}
+    <a href="{% url 'home' %}" class="site-nav__link{% if active == 'home' %} is-active{% endif %}">Home</a>
+    <a href="{% url 'room_list' %}" class="site-nav__link{% if active == 'rooms' %} is-active{% endif %}">Explore rooms</a>
     <a href="{% url 'about' %}" class="site-nav__link{% if active == 'about' %} is-active{% endif %}">About</a>
+    <a href="{% url 'login' %}" class="site-nav__link{% if active == 'account' %} is-active{% endif %}">Login</a>
+    <a href="{% url 'signup' %}" class="site-nav__link site-nav__link--signup{% if active == 'account' %} is-active{% endif %}">Sign up</a>
+    {% endif %}
+
+    <p class="site-nav__drawer-label">Discover</p>
     <a href="{% url 'villas' %}" class="site-nav__link{% if active == 'villas' %} is-active{% endif %}">Villas</a>
+    <a href="{% url 'virtual_rooms' %}" class="site-nav__link{% if active == 'virtual_rooms' %} is-active{% endif %}">Virtual tour preview</a>
     <a href="{% url 'experiences' %}" class="site-nav__link{% if active == 'experiences' %} is-active{% endif %}">Experiences</a>
     <a href="{% url 'events' %}" class="site-nav__link{% if active == 'events' %} is-active{% endif %}">Events</a>
     <a href="{% url 'chat' %}" class="site-nav__link{% if active == 'chat' %} is-active{% endif %}">AI Concierge</a>

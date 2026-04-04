@@ -36,7 +36,7 @@ def _system_prompt() -> str:
     return os.environ.get("AI_SYSTEM_PROMPT") or RESORT_ASSISTANT_SYSTEM_PROMPT
 
 
-def _openrouter_chat(user_message: str, timeout: int) -> str:
+def _openrouter_chat(user_message: str, timeout: int, *, system_content: str | None = None) -> str:
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
         raise AIConfigurationError("OPENROUTER_API_KEY is not set.")
@@ -44,10 +44,11 @@ def _openrouter_chat(user_message: str, timeout: int) -> str:
     model = os.environ.get("OPENROUTER_MODEL", "google/gemini-2.0-flash-001")
     url = "https://openrouter.ai/api/v1/chat/completions"
     site_url = os.environ.get("SITE_URL", "http://127.0.0.1:8000")
+    sys_msg = system_content if system_content is not None else _system_prompt()
     payload = {
         "model": model,
         "messages": [
-            {"role": "system", "content": _system_prompt()},
+            {"role": "system", "content": sys_msg},
             {"role": "user", "content": user_message},
         ],
         "temperature": 0.65,
@@ -90,17 +91,18 @@ def _openrouter_chat(user_message: str, timeout: int) -> str:
         raise AIUpstreamError("Unexpected response from OpenRouter.") from e
 
 
-def _openai_chat(user_message: str, timeout: int) -> str:
+def _openai_chat(user_message: str, timeout: int, *, system_content: str | None = None) -> str:
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
         raise AIConfigurationError("OPENAI_API_KEY is not set.")
 
     model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
     url = "https://api.openai.com/v1/chat/completions"
+    sys_msg = system_content if system_content is not None else _system_prompt()
     payload = {
         "model": model,
         "messages": [
-            {"role": "system", "content": _system_prompt()},
+            {"role": "system", "content": sys_msg},
             {"role": "user", "content": user_message},
         ],
         "temperature": 0.65,
@@ -141,7 +143,7 @@ def _openai_chat(user_message: str, timeout: int) -> str:
         raise AIUpstreamError("Unexpected response from OpenAI.") from e
 
 
-def _gemini_chat(user_message: str, timeout: int) -> str:
+def _gemini_chat(user_message: str, timeout: int, *, system_content: str | None = None) -> str:
     key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not key:
         raise AIConfigurationError("GEMINI_API_KEY or GOOGLE_API_KEY is not set.")
@@ -151,8 +153,9 @@ def _gemini_chat(user_message: str, timeout: int) -> str:
         f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         f"?key={urllib.parse.quote(key)}"
     )
+    sys_msg = system_content if system_content is not None else _system_prompt()
     payload = {
-        "systemInstruction": {"parts": [{"text": _system_prompt()}]},
+        "systemInstruction": {"parts": [{"text": sys_msg}]},
         "contents": [{"role": "user", "parts": [{"text": user_message}]}],
     }
     data = json.dumps(payload).encode("utf-8")
@@ -228,3 +231,21 @@ def get_ai_reply(user_message: str, *, timeout: int | None = None) -> tuple[str,
     if provider == "openai":
         return _openai_chat(user_message, t), "openai"
     return _gemini_chat(user_message, t), "gemini"
+
+
+def get_ai_completion(
+    user_message: str,
+    *,
+    system_prompt: str,
+    timeout: int | None = None,
+) -> tuple[str, Provider]:
+    """
+    Same transports as get_ai_reply but with a task-specific system prompt (e.g. JSON tools).
+    """
+    t = timeout if timeout is not None else int(os.environ.get("AI_REQUEST_TIMEOUT", "90"))
+    provider = _choose_provider()
+    if provider == "openrouter":
+        return _openrouter_chat(user_message, t, system_content=system_prompt), "openrouter"
+    if provider == "openai":
+        return _openai_chat(user_message, t, system_content=system_prompt), "openai"
+    return _gemini_chat(user_message, t, system_content=system_prompt), "gemini"

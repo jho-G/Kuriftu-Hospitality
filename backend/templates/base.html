@@ -6,6 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Kuriftu Resort &amp; Spa{% endblock %} — African Village</title>
   <link rel="stylesheet" href="{% static 'css/kuriftu.css' %}">
+  <style>
+    .flash-msg { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .flash-msg--success { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #166534; }
+    .flash-msg--error { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #991b1b; }
+    .flash-msg--warning { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #92400e; }
+    .flash-msg--info, .flash-msg--debug { background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); color: #1e40af; }
+  </style>
   {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -14,6 +21,13 @@
   {% endblock %}
 
   <main class="main-content {% block main_class %}{% endblock %}">
+    {% if messages %}
+    <div class="container-resort" style="padding-top: 1rem;">
+      {% for message in messages %}
+      <p class="flash-msg flash-msg--{{ message.tags }}" role="alert">{{ message }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
     {% block content %}{% endblock %}
   </main>
 
@@ -38,6 +52,12 @@
         });
         drawer.querySelectorAll("a").forEach(function (a) {
           a.addEventListener("click", function () {
+            drawer.classList.remove("is-open");
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        });
+        drawer.querySelectorAll("form").forEach(function (f) {
+          f.addEventListener("submit", function () {
             drawer.classList.remove("is-open");
             toggle.setAttribute("aria-expanded", "false");
           });

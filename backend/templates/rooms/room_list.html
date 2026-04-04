@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Rooms{% endblock %}
+
+{% block content %}
+<header class="page-hero page-hero--compact" style="background: linear-gradient(rgba(45,38,32,0.88), rgba(45,38,32,0.92)), var(--color-forest, #2d4a3e);">
+  <div class="container-resort">
+    <p class="page-hero__eyebrow">Stay</p>
+    <h1>Rooms &amp; villas</h1>
+    <p class="page-hero__sub">Explore types and capacity — sign in to book or open the full 3D experience.</p>
+  </div>
+</header>
+
+<section class="section-padding" style="background: var(--color-cream);">
+  <div class="container-resort">
+    {% if rooms %}
+    <ul style="list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem;">
+      {% for room in rooms %}
+      <li>
+        <a href="{% url 'room_detail' pk=room.pk %}" style="display: block; text-decoration: none; color: inherit; background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem; border: 1px solid rgba(45,38,32,0.1); box-shadow: 0 4px 20px rgba(45,38,32,0.05);">
+          <strong style="font-size: 1.1rem;">{{ room.name }}</strong>
+          <span style="color: var(--color-text-muted); display: block; margin-top: 0.25rem;">{{ room.room_number }} · {{ room.room_type }} · up to {{ room.capacity }} guests</span>
+          {% if room.has_virtual_twin %}
+          <span style="display: inline-block; margin-top: 0.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-terracotta, #c45c3e);">Virtual tour available</span>
+          {% endif %}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color: var(--color-text-muted);">No rooms are listed yet.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Sign in{% endblock %}
+{% block main_class %}auth-layout{% endblock %}
+
+{% block content %}
+<div class="container-resort" style="width: 100%; max-width: 480px;">
+  <div class="auth-card">
+    <h1 class="auth-card__title">Sign in</h1>
+    <p class="auth-card__lead">Access your dashboard, bookings, and full virtual room experience. We’ll send you back to the page you wanted after you sign in.</p>
+
+    <form method="post" action="{% url 'login' %}" class="auth-form" novalidate>
+      {% csrf_token %}
+      {% if request.GET.next %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+      {% endif %}
+
+      {% if form.non_field_errors %}
+      <div class="flash-msg flash-msg--error" style="margin-bottom: 1.25rem;">
+        {% for err in form.non_field_errors %}<span>{{ err }}</span>{% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="auth-field">
+        <label for="id_username">Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+        <ul class="auth-error-list">{% for err in form.username.errors %}<li>{{ err }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+      <div class="auth-field">
+        <label for="id_password">Password</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+        <ul class="auth-error-list">{% for err in form.password.errors %}<li>{{ err }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+      <button type="submit" class="auth-submit">Sign in</button>
+    </form>
+
+    <p class="auth-card__footer">
+      No account yet? <a href="{% url 'signup' %}">Create one</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<header class="page-hero page-hero--compact" style="background: linear-gradient(135deg, rgba(45,38,32,0.92), rgba(30,27,24,0.95));">
+  <div class="container-resort">
+    <p class="page-hero__eyebrow">Your stay</p>
+    <h1>Welcome, {{ user.get_short_name|default:user.username }}</h1>
+    <p class="page-hero__sub">Manage bookings and account shortcuts</p>
+  </div>
+</header>
+
+<section class="section-padding" style="background: var(--color-cream);">
+  <div class="container-resort">
+    {% if user.is_staff or user.is_superuser %}
+    <p style="margin-bottom: 1.5rem;">
+      <a href="{% url 'admin:index' %}" class="btn-nav-cta" style="display: inline-flex;" target="_blank" rel="noopener">Dashboard admin</a>
+      <span style="color: var(--color-text-muted); font-size: 0.9rem; margin-left: 0.75rem;">Hotel operations (staff)</span>
+    </p>
+    {% endif %}
+
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.5rem;">
+      <a href="{% url 'room_list' %}" class="btn-nav-cta" style="display: inline-flex; text-decoration: none;">Browse rooms</a>
+      <a href="{% url 'virtual_rooms' %}" class="btn-nav-cta" style="display: inline-flex; text-decoration: none; background: transparent; border: 2px solid var(--color-terracotta, #c45c3e); color: var(--color-terracotta, #c45c3e);">Virtual room tour</a>
+    </div>
+
+    <section id="profile" style="margin-bottom: 2.5rem; padding: 1.5rem; background: #fff; border-radius: 12px; border: 1px solid rgba(45,38,32,0.1); scroll-margin-top: calc(var(--nav-h) + 1rem);">
+      <h2 style="margin: 0 0 1rem; font-size: 1.15rem;">Profile</h2>
+      <dl style="margin: 0; display: grid; gap: 0.65rem; font-size: 0.95rem;">
+        <div><dt style="display: inline; font-weight: 600; color: var(--color-text-muted);">Username:</dt> <dd style="display: inline; margin: 0;">{{ user.username }}</dd></div>
+        {% if user.email %}
+        <div><dt style="display: inline; font-weight: 600; color: var(--color-text-muted);">Email:</dt> <dd style="display: inline; margin: 0;">{{ user.email }}</dd></div>
+        {% endif %}
+        {% if user.get_full_name %}
+        <div><dt style="display: inline; font-weight: 600; color: var(--color-text-muted);">Name:</dt> <dd style="display: inline; margin: 0;">{{ user.get_full_name }}</dd></div>
+        {% endif %}
+        {% if user.phone %}
+        <div><dt style="display: inline; font-weight: 600; color: var(--color-text-muted);">Phone:</dt> <dd style="display: inline; margin: 0;">{{ user.phone }}</dd></div>
+        {% endif %}
+      </dl>
+      <p style="margin: 1rem 0 0; font-size: 0.85rem; color: var(--color-text-muted);">To change your password or staff-only fields, use the admin panel if you have access, or contact the front desk.</p>
+    </section>
+
+    <section id="bookings" style="scroll-margin-top: calc(var(--nav-h) + 1rem);">
+      <h2 style="margin-bottom: 1rem;">My bookings</h2>
+      {% if bookings %}
+      <ul style="list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem;">
+        {% for b in bookings %}
+        <li style="background: #fff; border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(45,38,32,0.1);">
+          <strong>{{ b.room.name }}</strong> · {{ b.room.room_number }}<br>
+          <span style="color: var(--color-text-muted); font-size: 0.95rem;">{{ b.check_in }} → {{ b.check_out }} · {{ b.get_status_display }}</span>
+          {% if b.total_price %}
+          <br><span style="font-weight: 600;">{{ b.total_price }} total</span>
+          {% endif %}
+          <div style="margin-top: 0.75rem;">
+            <a href="{% url 'booking_confirmation' pk=b.pk %}" style="color: var(--color-terracotta, #c45c3e); font-weight: 600;">View confirmation</a>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="color: var(--color-text-muted);">No bookings yet. <a href="{% url 'room_list' %}" style="color: var(--color-terracotta, #c45c3e); font-weight: 600;">Reserve a room</a></p>
+      {% endif %}
+    </section>
+  </div>
+</section>
+{% endblock %}

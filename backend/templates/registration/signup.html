@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Create account{% endblock %}
+{% block main_class %}auth-layout{% endblock %}
+
+{% block content %}
+<div class="container-resort" style="width: 100%; max-width: 520px;">
+  <div class="auth-card">
+    <h1 class="auth-card__title">Create account</h1>
+    <p class="auth-card__lead">Join to book rooms and unlock the full virtual tour. After you register, you’ll be signed in automatically and taken to your dashboard.</p>
+
+    <form method="post" class="auth-form" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div class="flash-msg flash-msg--error" style="margin-bottom: 1.25rem;">
+        {% for err in form.non_field_errors %}<span>{{ err }}</span>{% endfor %}
+      </div>
+      {% endif %}
+
+      {% for field in form %}
+      <div class="auth-field">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+        <p style="font-size: 0.8rem; color: var(--color-text-muted); margin: 0.35rem 0 0;">{{ field.help_text }}</p>
+        {% endif %}
+        {% if field.errors %}
+        <ul class="auth-error-list">{% for err in field.errors %}<li>{{ err }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="auth-submit">Create account</button>
+    </form>
+
+    <p class="auth-card__footer">
+      Already registered? <a href="{% url 'login' %}">Sign in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
