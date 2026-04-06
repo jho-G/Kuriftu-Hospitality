@@ -187,20 +187,3 @@ if not DEBUG and _ON_RENDER:
 
 
 
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
-def create_admin():
-    username = os.environ.get("ADMIN_USERNAME")
-    email = os.environ.get("ADMIN_EMAIL")
-    password = os.environ.get("ADMIN_PASSWORD")
-
-    if username and password:
-        if not User.objects.filter(username=username).exists():
-            User.objects.create_superuser(username, email, password)
-
-try:
-    create_admin()
-except Exception as e:
-    print("Admin creation skipped:", e)
