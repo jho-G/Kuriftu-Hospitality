@@ -186,8 +186,7 @@ if not DEBUG and _ON_RENDER:
     X_FRAME_OPTIONS = "DENY"
 
 
-import os
-from django.contrib.auth import get_user_model
+
 
 User = get_user_model()
 
